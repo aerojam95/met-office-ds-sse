@@ -1,0 +1,26 @@
+logging:
+  version: 1
+  disable_existing_loggers: False
+  formatters:
+    default:
+      format: "%(asctime)s - %(levelname)s - %(message)s"
+      datefmt: "%Y-%m-%d %H:%M:%S"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: INFO
+      formatter: default
+      stream: ext://sys.stdout
+    file:
+      class: logging.FileHandler
+      level: INFO
+      formatter: default
+      filename: "../outputs/forecasters_reference_book.log"
+  loggers:
+    looger_name: "forecasters_reference_book_logger"
+    level: DEBUG
+    handlers: [console, file]
+    propagate: no
+  root:
+    level: DEBUG
+    handlers: [console, file]

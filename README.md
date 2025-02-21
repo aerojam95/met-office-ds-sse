@@ -5,44 +5,34 @@
 This Python script implements a forecaster's reference book method to process weather data and compute the minimum temperature at noon (Temp. min. noon) based on various weather parameters, including wind speed and cloud cover. The method reads from a CSV data file, uses a lookup table for wind speed and cloud cover ranges, and outputs the processed data to a new CSV file.
 
 ## Table of Contents
-- [File Structure](#file-structure)
-- [Requirements](#requirements)
-- [Configuration File](#configuration-file-forecasters_reference_book_configyaml)
-- [Data File Formats](#data-file-formats)
-  - [`K_lookup.csv`](#k_lookupcsv)
-  - [Input files](#input-files)
-- [Script Execution](#script-execution)
-  - [Logging Setup](#logging-setup)
-  - [Data Import](#data-import)
-  - [Method Computation](#method-computation)
-  - [Output Generation](#output-generation)
+- [Background](#background)
+- [Data](#data)
+    - [Configuration File](#configuration-file)
+    - [`K_lookup.csv`](#k_lookupcsv)
+    - [Input files](#input-files)
+- [Code](#code)
+    - [Python virtual environment](#python-venv)
+    - [Script Execution](#script-execution)
+    - [Output Generation](#output-generation)
 
-## File Structure
+## Background
 
-The following files are used by the Python script:
+The code performs the following calculations:
 
-1. **Python Script** (`forecasters_reference_book.py`) - Main execution script
-2. **YAML Configuration File** (`forecasters_reference_book_config.yaml`) - Configuration file with paths and output settings
-3. **CSV Data Files**:
-    - `K_lookup.csv` - Lookup table for wind speed, cloud cover ranges, and K values
-    - `initial_data.csv` - Weather data containing parameters like wind speed, cloud cover, and temperature
-4. **Output Directory** (`../outputs/`) - Directory where the processed data will be saved
+- It compares the wind speed and cloud cover from the data against the ranges in the K lookup table
+- For each row in the input data, it finds the matching row in the lookup table where the wind speed and cloud cover fall within the defined ranges and assigns the corresponding K value
 
-## Requirements
+The method then computes the minimum temperature at noon (Temp. min. noon) based on the formula:
 
-- Python 3.x
-- Libraries:
-  - `numpy`
-  - `pandas`
-  - `yaml`
-
-You can install the required libraries using `pip`:
-
-```bash
-pip3 install numpy pandas pyyaml
+```
+Temp. min. noon = 0.316 * Temp. noon + 0.548 * Temp. dew point noon - 1.24 + K
 ```
 
-## Configuration File (`forecasters_reference_book_config.yaml`)
+Where `K` is the value assigned from by a lookup table. The result is rounded to the precision defined in a configuration file.
+
+## Data
+
+### Configuration File (`forecasters_reference_book_config.yaml`)
 
 The configuration file is used to define various paths and settings. The structure is as follows:
 
@@ -59,8 +49,6 @@ outputs:
   output_directory: "../outputs/"  # Directory to save the output file
 
 ```
-
-## Data File Formats 
 
 ### `K_lookup.csv`
 
@@ -114,47 +102,38 @@ Temp. noon (celcius),Temp. dew point noon (celius),wind speed (knots),cloud cove
 26,8.5,0,0.0,B,2
 13.2,9.4,12.5, 4.1,C,2
 ```
-## Script Execution
+
+## Code
+
+The code to produce the models and results for the comparative study can be found in [src](src/).
+
+### Python virtual environment
+
+Before using the code it is best to setup and start a Python virtual environment in order to avoid potential package clashes using the [requirements](src/requirements.txt) file:
+
+```
+# Navigate into the data project directory
+
+# Create a virtual environment
+python3 -m venv <env-name>
+
+# Activate virtual environment
+source <env-name>/bin/activate
+
+# Install dependencies for code
+pip3 install -r requirements.txt
+
+# When finished with virtual environment
+deactivate
+```
+
+### Script Execution
 
 To execute the script, run the following command:
 
 ```bash
 python3 forecasters_reference_book.py
 ```
-
-### Logging Setup
-
-Logging is configured at the start of the script. Logs are written to both the console and a log file (`../outputs/forecasters_reference_book.log`). If the log file does not exist, the script will raise a FileNotFoundError.
-
-Logging information includes:
-
-`INFO`: General progress updates.
-`ERROR`: If there are issues during the execution (e.g. file not found).
-
-
-### Data Import
-
-The script imports data from the following sources:
-
-- The `K_lookup.csv` file is read to load the lookup table for wind speed, cloud cover, and K values
-- The `<input_data_file>.csv` file is read to load the weather data to be processed
-
-Both files are imported using the pandas library, and relevant columns are converted to numeric types using pd.to_numeric() with errors="coerce" to handle any invalid or missing values.
-
-### Method Computation
-
-The script performs the following calculations:
-
-- It compares the wind speed and cloud cover from the data against the ranges in the K lookup table
-- For each row in the input data, it finds the matching row in the lookup table where the wind speed and cloud cover fall within the defined ranges and assigns the corresponding K value
-
-The method then computes the minimum temperature at noon (Temp. min. noon) based on the formula:
-
-```
-Temp. min. noon = 0.316 * Temp. noon + 0.548 * Temp. dew point noon - 1.24 + K
-```
-
-Where `K` is the value assigned from the lookup table. The result is rounded to the precision defined in the configuration file.
 
 ### Output Generation
 
