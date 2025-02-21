@@ -1,0 +1,10 @@
+method_data:
+  k_lookup_file_path: "../data/K_lookup.csv"
+
+data:
+  data_file_path: "../data/initial_data.csv"
+
+outputs:
+  decimal_place_precision: 2
+  output_filename: "initial_outputs.csv"
+  output_directory: "../outputs/"
