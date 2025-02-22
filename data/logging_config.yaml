@@ -17,10 +17,10 @@ logging:
       formatter: default
       filename: "../outputs/forecasters_reference_book.log"
   loggers:
-    looger_name: "forecasters_reference_book_logger"
-    level: DEBUG
-    handlers: [console, file]
-    propagate: no
+    forecasters_reference_book_logger: 
+      level: INFO
+      handlers: [console, file]
+      propagate: no
   root:
-    level: DEBUG
+    level: INFO
     handlers: [console, file]
