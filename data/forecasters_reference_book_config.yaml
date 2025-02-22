@@ -6,5 +6,4 @@ data:
 
 outputs:
   decimal_place_precision: 2
-  output_filename: "initial_outputs.csv"
-  output_directory: "../outputs/"
+  output_filepath: "initial_outputs.csv"

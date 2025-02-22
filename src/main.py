@@ -7,6 +7,7 @@
 #=============================================================================
 
 # Python in built modules
+import argparse
 import logging
 import os
 
@@ -14,37 +15,17 @@ import os
 import pandas as pd
 import yaml
 
-#=============================================================================
-# Imports
-#=============================================================================
+# Custom modules
+from custom_logger import get_logger
+import DataImportExport as die
+import ForecasterReferenceBook as frb
 
 #=============================================================================
 # Variables
 #=============================================================================
 
-# Configuration file path
-configuration_file_path = "../data/forecasters_reference_book_config.yaml"
-
-# logging variables
-logging_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-log_file_path  = "../outputs/forecasters_reference_book.log"
-logger_name    = "forecasters_reference_book_logger"
-
-# Check log file exists
-if not os.path.exists(log_file_path):
-     raise FileNotFoundError(f"The log file {log_file_path} does not exist")
-
-# Configure logging
-logging.basicConfig(level=logging.INFO,
-                    format=f"{logging_format}",
-                    handlers=[
-                        logging.FileHandler(f"{log_file_path}"),
-                        logging.StreamHandler()
-                    ])
-
-# Create logger
-logger = logging.getLogger(f"{logger_name}")
-
+# Logging
+logger = get_logger("../data/logging_config.yaml")
 
 #=============================================================================
 # Programme exectuion
@@ -59,38 +40,30 @@ if __name__ == "__main__":
     logger.info(f"Executing forecaster's referenece book method...")
     
     #==========================================================================
+    # Argument parsing
+    #==========================================================================
+    
+    parser = argparse.ArgumentParser(description="files for mph processing")
+    parser.add_argument("-c", "--config_filepath", type=str, required=True, help="YAML configuration file")
+    args = parser.parse_args()
+    config_filepath = args.config_filepath
+    
+    #==========================================================================
     # Configuration imports
     #==========================================================================
     
-    logger.info(f"importing configurations...")
-    
-    # Extract configurations    
-    with open(configuration_file_path, "r") as file:
-        configuration_data = yaml.safe_load(file)
-    k_lookup_file_path = configuration_data["method_data"]["k_lookup_file_path"]
-    data_file_path     = configuration_data["data"]["data_file_path"]
-    precision          = configuration_data["outputs"]["decimal_place_precision"]
-    output_filename    = configuration_data["outputs"]["output_filename"]
-    output_directory   = configuration_data["outputs"]["output_directory"]
-    
+    logger.info(f"importing configurations...")  
+    config_data = die.read_yaml_configuration_file(config_filepath)
+    k_lookup_file_path, data_file_path, precision, output_filepath = die.assign_configuration_data(config_data)
     logger.info(f"imported configurations")
     
     #==========================================================================
     # Method imports
     #==========================================================================
     
-    logger.info(f"importing method data from {k_lookup_file_path}...")
-    
-    # Read the CSV file into a DataFrame
-    k_lookup_df = pd.read_csv(k_lookup_file_path)
-
-    # Convert relevant columns to numeric, treating "NaN" properly
-    k_lookup_df["wind speed min. (knots)"] = pd.to_numeric(k_lookup_df["wind speed min. (knots)"], errors="coerce")
-    k_lookup_df["wind speed max. (knots)"] = pd.to_numeric(k_lookup_df["wind speed max. (knots)"], errors="coerce")
-    k_lookup_df["cloud cover min. (oktas)"] = pd.to_numeric(k_lookup_df["cloud cover min. (oktas)"], errors="coerce")
-    k_lookup_df["cloud cover max. (oktas)"] = pd.to_numeric(k_lookup_df["cloud cover max. (oktas)"], errors="coerce")
-    k_lookup_df["K ()"] = pd.to_numeric(k_lookup_df["K ()"], errors="coerce")
-        
+    # Read the lookup CSV data into relevant arrays
+    logger.info(f"importing lookup data from {k_lookup_file_path}...")
+    min_wind, max_wind, min_cover, max_cover, K_values = die.import_lookup_data(k_lookup_file_path)
     logger.info(f"imported method data from {k_lookup_file_path}")
     
     #==========================================================================
@@ -120,11 +93,6 @@ if __name__ == "__main__":
     # Convert the wind speeds and cloud cover columns to numpy arrays
     wind_speed = data_df["wind speed (knots)"].to_numpy().round()
     cloud_cover = data_df["cloud cover (oktas)"].to_numpy().round()
-    min_wind   = k_lookup_df["wind speed min. (knots)"].to_numpy()
-    max_wind   = k_lookup_df["wind speed max. (knots)"].to_numpy()
-    min_cover  = k_lookup_df["cloud cover min. (oktas)"].to_numpy()
-    max_cover  = k_lookup_df["cloud cover max. (oktas)"].to_numpy()
-    K_values   = k_lookup_df["K ()"].to_numpy()
     
     # Find indices where wind speed and cloud cover falls within min/max range
     matches = (
