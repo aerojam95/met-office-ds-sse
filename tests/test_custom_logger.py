@@ -5,22 +5,19 @@
 # Python modules
 import logging
 import os
-import sys
 import unittest
 
 # Third party modules
 import yaml
 
 # testing module
-# Add the parent directory to sys.path so we can import testing module
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src/")))
-from custom_logger import get_logger
+from custom_logger import get_custom_logger
 
 #=============================================================================
 # Tests
 #=============================================================================
 
-class TestGetLogger(unittest.TestCase):
+class TestGetCustomLogger(unittest.TestCase):
     def setUp(self:object):
         """Create a temporary YAML file for logging configuration"""
         self.test_yaml_file = "test_logging_config.yaml"
@@ -75,7 +72,7 @@ class TestGetLogger(unittest.TestCase):
     def test_logger_creation(self:object):
         """Test if the logger is created correctly from YAML configuration"""
         try:
-            logger = get_logger(self.test_yaml_file)
+            logger = get_custom_logger(self.test_yaml_file)
             # Check logger instance created
             self.assertIsInstance(logger, logging.Logger, "Logger is not an instance of logging.Logger.")
 

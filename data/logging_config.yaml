@@ -8,19 +8,19 @@ logging:
   handlers:
     console:
       class: logging.StreamHandler
-      level: INFO
+      level: DEBUG
       formatter: default
       stream: ext://sys.stdout
     file:
       class: logging.FileHandler
-      level: INFO
+      level: DEBUG
       formatter: default
       filename: "../outputs/forecasters_reference_book.log"
   loggers:
     forecasters_reference_book_logger: 
-      level: INFO
+      level: DEBUG
       handlers: [console, file]
-      propagate: no
+      propagate: False
   root:
-    level: INFO
+    level: DEBUG
     handlers: [console, file]

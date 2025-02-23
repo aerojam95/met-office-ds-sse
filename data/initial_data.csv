@@ -1,5 +1,5 @@
-Temp. noon (celcius),Temp. dew point noon (celius),wind speed (knots),cloud cover (oktas),location,date
-22.4,10.9,14.56,3.9,A,1
-18.6,12.56,3.4,6,B,1
-26,8.5,0,0.0,B,2
-13.2,9.4,12.5, 4.1,C,2
+Temp. noon (celcius),Temp. dew point noon (celius),Wind speed (knots),Cloud cover (oktas),Location,Date
+22.4,10.9,14.56,3.9,1,1
+18.6,12.56,3.4,6,2,1
+26,8.5,0,0.0,2,2
+13.2,9.4,12.5, 4.1,3,2

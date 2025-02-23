@@ -13,7 +13,7 @@ import yaml
 # =============================================================================
 
 
-def get_logger(yaml_config_file_path: str):
+def get_custom_logger(yaml_config_file_path: str):
     """Set up logger based on configuration from a YAML file
 
     Args:
@@ -33,7 +33,7 @@ def get_logger(yaml_config_file_path: str):
 
         # Dynamically get the logger's name from YAML configuration
         logger_name =next(iter(config["logging"]["loggers"]), "default_logger")
-
+        
         # Use the logger name dynamically
         logger = logging.getLogger(logger_name)
         return logger

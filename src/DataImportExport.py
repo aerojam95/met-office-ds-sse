@@ -10,20 +10,20 @@ import pandas as pd
 import yaml
 
 # Custom modules
-from custom_logger import get_logger
+from custom_logger import get_custom_logger
 
 #=============================================================================
 # Variables
 #=============================================================================
 
 # Logging
-logger = get_logger("../data/logging_config.yaml")
+logger = get_custom_logger("../data/logging_config.yaml")
 
 #=============================================================================
 # Functions
 #=============================================================================
 
-def read_yaml_configuration_file(yaml_configuration_file_path:str):
+def import_yaml_configuration_file(yaml_configuration_file_path:str):
     """import data in yaml file into configuration data dictonary
 
     Args:
@@ -40,74 +40,78 @@ def read_yaml_configuration_file(yaml_configuration_file_path:str):
     try:
         if os.path.exists(yaml_configuration_file_path):
             with open(yaml_configuration_file_path, "r") as file:
-                configuration_data = yaml.safe_load(file)
-            logger.info("Read configuration from {yaml_configuration_file_path}")
-            return configuration_data
-    except FileNotFoundError as e:
-        message = f"The YAML configuration file {yaml_configuration_file_path} does not exist!"
-        logger.critical(message)
-        raise FileNotFoundError(message) from e
-    except yaml.YAMLError as e:
-        message = f"There was an issue parsing the YAML configuration file {yaml_configuration_file_path}: {e}"
-        logger.critical(message)
-        raise yaml.YAMLError(message) from e
+                config_data = yaml.safe_load(file)
+            logger.info(f"Read configuration from {yaml_configuration_file_path}")
+            return config_data
+    except FileNotFoundError as fe:
+        msg = f"FileNotFoundError: the YAML configuration file {yaml_configuration_file_path} does not exist: {fe}!"
+        logger.critical(msg)
+        raise FileNotFoundError(msg) from fe
+    except yaml.YAMLError as ye:
+        msg = f"YAMLError: there was an issue parsing the YAML configuration file {yaml_configuration_file_path}: {ye}!"
+        logger.critical(msg)
+        raise yaml.YAMLError(msg) from ye
+    except Exception as e:
+        msg = f"Error: unexpected error occurred: {e}!"
+        logger.critical(msg)
+        raise Exception(msg) from e
     
-def assign_configuration_data(configuration_data:dict):
-    """Assigns variables to configuration data stored in parsed dictionary
-
-    Args:
-        configuration_data (dict): dictionary formatted for config data
-
-    Returns:
-        str, str, int, str: file path for lookup data, 
-                            file path for data to be processed,
-                            precision for comuted outputs,
-                            file path for computation outputs  
-    """
-    # Log function entry
-    logger.info("Assigning configuration variables...")
-    try:
-        k_lookup_file_path = configuration_data["method_data"]["k_lookup_file_path"]
-        data_file_path     = configuration_data["data"]["data_file_path"]
-        precision          = configuration_data["outputs"]["decimal_place_precision"]
-        output_filepath    = configuration_data["outputs"]["output_filepath"]
-        logger.info("Assigned configuration variables")
-        return k_lookup_file_path, data_file_path, precision, output_filepath
-    except KeyError as e:
-        message = f"Configuration data is not formatted correctly for processing!"
-        logger.critical(message)
-        raise KeyError(message) from e
-    
-def import_lookup_data(k_lookup_file_path:str):
-    """Returns 5 columns from .csv lookup file parsed from the argument as 5
-    numpy arrays
+def import_csv_data_file(file:str, columns:list):
+    """Returns columns from .csv file selected as a dictionary of the data
     
     Args:
-        k_lookup_file_path (str): file path to lookup value .csv file
+        file (str): file path for relevant .csv file to import data from
+        columns (list): list of columns names contained in relevant .csv file to import data from
 
     Returns:
-        np.array, np.array, np.array, np.array, np.array: returns five columns
-            of data stored in lookup value .csv file as np.arrays
+        dict: dictionary of converted columns for each column from parsed .csv file   
     """
+    # Dictionary to store imported data
+    imported_data = {}
     # Log function entry
-    logger.info("Importing lookup value data...")
+    logger.info(f"Importing data from {file}...")
     try:
-        if os.path.exists(k_lookup_file_path):
+        if os.path.exists(file):
             # Read the CSV file into a DataFrame
-            k_lookup_df = pd.read_csv(k_lookup_file_path)
-            # Convert relevant columns to numeric, treating "NaN" properly and convert to numpy arrays
-            min_wind  = pd.to_numeric(k_lookup_df["wind speed min. (knots)"], errors="coerce").to_numpy()
-            max_wind  = pd.to_numeric(k_lookup_df["wind speed max. (knots)"], errors="coerce").to_numpy()
-            min_cover = pd.to_numeric(k_lookup_df["cloud cover min. (oktas)"], errors="coerce").to_numpy()
-            max_cover = pd.to_numeric(k_lookup_df["cloud cover max. (oktas)"], errors="coerce").to_numpy()
-            K_values  = pd.to_numeric(k_lookup_df["K ()"], errors="coerce").to_numpy()
-            logger.info("IMported lookup value data")
-            return min_wind, max_wind, min_cover, max_cover, K_values
-    except FileNotFoundError as e:
-        message = f"The lookup data .csv file {k_lookup_file_path} does not exist!"
-        logger.critical(message)
-        raise FileNotFoundError(message) from e    
+            df = pd.read_csv(file)
+            # Check for missing data
+            if (df == "").values.any():  # Check if any value empty values
+                raise ValueError("The CSV file contains missing values")
+            # Convert relevant columns to numeric and store them in the dictionary
+            for col in columns:
+                imported_data[col] = pd.to_numeric(df[col], errors="coerce").to_numpy()
+            logger.info(f"Imported  data from {file}")
+            return imported_data
+    except FileNotFoundError as fe:
+        msg = f"FileNotFoundError: the {file} does not exist: {fe}!"
+        logger.critical(msg)
+        raise FileNotFoundError(msg) from fe
+    except ValueError as ve:
+        msg = f"ValueError: The CSV file contains missing values : {ve}!"
+        logger.critical(msg)
+        raise ValueError(msg) from ve
+    except Exception as e:
+        msg = f"Error: unexpected error occurred: {e}!"
+        logger.critical(msg)
+        raise Exception(msg) from e
 
-#=============================================================================
-# Classes
-#=============================================================================
+def export_csv_data_file(file:str, export_data:dict):
+    """Exports data in a dictionary to a .csv file
+    
+    Args:
+        file (str): file path for relevant .csv file to import data from
+        export_data (dict): dictionary of keys as columns for .csv and values
+                            of data to be printed to .csv file
+    """
+    # Check if file exists
+    logger.info(f"Exporting data to {file}...")
+    try:
+        if os.path.exists(file):
+            logger.warning(f"The file {file} already exists and will be overwritten")
+        output_df = pd.DataFrame(export_data)
+        output_df.to_csv(file, index=False)
+        logger.info(f"Exported data to {file}")
+    except Exception as e:
+        msg = f"Error: unexpected error occurred: {e}!"
+        logger.critical(msg)
+        raise Exception(msg) from e

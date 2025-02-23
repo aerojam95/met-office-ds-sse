@@ -1,9 +1,42 @@
-method_data:
+csv_files:
+- constants
+- k_lookup
+- data
+
+constants:
+  constants_file_path: "../data/forecasters_reference_book_constants.csv"
+  constants_columns:
+  - Temp. noon coeff (/celcius)
+  - Temp. dew point noon coeff (/celius)
+  - Temp. constant (celius)
+
+k_lookup:
   k_lookup_file_path: "../data/K_lookup.csv"
+  k_lookup_columns:
+    - Wind speed min. (knots)
+    - Wind speed max. (knots)
+    - Cloud cover min. (oktas)
+    - Cloud cover max. (oktas)
+    - K ()
 
 data:
   data_file_path: "../data/initial_data.csv"
+  data_columns:
+  - Temp. noon (celcius)
+  - Temp. dew point noon (celius)
+  - Wind speed (knots)
+  - Cloud cover (oktas)
+  - Location
+  - Date
 
 outputs:
-  decimal_place_precision: 2
-  output_filepath: "initial_outputs.csv"
+  output_file_path: "../outputs/initial_outputs.csv"
+  output_columns:
+  - Temp. noon (celcius)
+  - Temp. dew point noon (celius)
+  - Wind speed (knots)
+  - Cloud cover (oktas)
+  - Location
+  - Date
+  - K ()
+  - Temp. min. noon (celcius)
