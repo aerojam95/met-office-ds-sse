@@ -109,12 +109,12 @@ if __name__ == "__main__":
     # Calculate T min at noon
     imported_data["Temp. min. noon (celcius)"] = frb.calculate_temperature_min_noon_celcius(
         imported_data["Temp. noon (celcius)"],
-        imported_data["Temp. dew point noon (celius)"],
+        imported_data["Temp. dew point noon (celcius)"],
         imported_data["K ()"],
         coeff=[
             imported_constants_data["Temp. noon coeff (/celcius)"],
-            imported_constants_data["Temp. dew point noon coeff (/celius)"],
-            imported_constants_data["Temp. constant (celius)"],
+            imported_constants_data["Temp. dew point noon coeff (/celcius)"],
+            imported_constants_data["Temp. constant (celcius)"],
         ],
     )
 

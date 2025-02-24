@@ -7,8 +7,8 @@ constants:
   constants_file_path: "data/forecasters_reference_book_constants.csv"
   constants_columns:
   - Temp. noon coeff (/celcius)
-  - Temp. dew point noon coeff (/celius)
-  - Temp. constant (celius)
+  - Temp. dew point noon coeff (/celcius)
+  - Temp. constant (celcius)
 
 k_lookup:
   k_lookup_file_path: "data/K_lookup.csv"
@@ -23,7 +23,7 @@ data:
   data_file_path: "data/initial_data.csv"
   data_columns:
   - Temp. noon (celcius)
-  - Temp. dew point noon (celius)
+  - Temp. dew point noon (celcius)
   - Wind speed (knots)
   - Cloud cover (oktas)
   - Location
@@ -33,7 +33,7 @@ outputs:
   output_file_path: "outputs/initial_outputs.csv"
   output_columns:
   - Temp. noon (celcius)
-  - Temp. dew point noon (celius)
+  - Temp. dew point noon (celcius)
   - Wind speed (knots)
   - Cloud cover (oktas)
   - Location
