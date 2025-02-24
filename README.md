@@ -8,7 +8,7 @@ This Python script implements a forecaster's reference book method to process we
 - [Background](#background)
 - [Data](#data)
     - [Configuration File](#configuration-file)
-    - [`K_lookup.csv`](#k_lookupcsv)
+    - [Lookup File](#lookup-file)
     - [Input files](#input-files)
 - [Code](#code)
     - [Python virtual environment](#python-venv)
@@ -32,7 +32,7 @@ Where `K` is the value assigned from by a lookup table.
 
 ## Data
 
-### Configuration File (`forecasters_reference_book_config.yaml`)
+### Configuration File
 
 The configuration file is used to define various paths and settings. The structure is as follows:
 
@@ -83,7 +83,7 @@ outputs:
 
 The configuration file contains the three `.csv` files containing data needed for the computation of the minimum temperature at noon (`Temp. min. noon`). It lists the three requires `.csv` files for the method's constants, the `K` lookup itself, and the data for which to calculate the the minimum temperature at noon (`Temp. min. noon`). Each of these files is then defined with a file path to the relevant `.csv` file and the columns contained within the files, respectively. The configuration also contains the intended location for output, and the expected columns for the output of the programmes computation.
 
-### Lookup File (`K_lookup.csv`)
+### Lookup File
 
 This CSV file contains a lookup table for wind speed, cloud cover, and the corresponding K values and is required for programme execution. It has the following columns:
 
